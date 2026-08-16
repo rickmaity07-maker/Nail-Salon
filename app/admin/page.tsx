@@ -12,7 +12,7 @@ import {
   getArtists, upsertArtist, removeArtist,
   getSubscribers, addSubscriber, removeSubscriber,
   type Booking, type BookingStatus, type ServiceItem, type Artist, type Subscriber, type AccentColor,
-} from '../lib/mockstore';
+} from '../lib/mockStore';
 
 type Tab = 'dashboard' | 'schedule' | 'services' | 'artists' | 'mailing';
 

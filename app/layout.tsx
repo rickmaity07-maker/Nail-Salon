@@ -14,7 +14,7 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "The Nail Lab | Premium Nail Care",
+  title: "Aura Nail Studio | Premium Nail Care",
   description: "Editorial nail care and treatments.",
 };
 
@@ -24,8 +24,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${jakarta.variable} ${playfair.variable} font-sans antialiased`}>
+    <html lang="en" className="scroll-smooth">
+      <body className={`${jakarta.variable} ${playfair.variable} font-sans antialiased bg-black text-white`}>
         {children}
       </body>
     </html>
