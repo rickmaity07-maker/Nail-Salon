@@ -3,29 +3,28 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Menu, X, ShoppingBag, User, Check, Loader2, Trash2 } from 'lucide-react';
-import { addSubscriber, getServices, type ServiceItem } from './lib/mockStore';
-
-// Swapped to Pexels. Unsplash blocks hotlinking on localhost now, which is why 
-// your images were breaking. Pexels guarantees they will load immediately.
+import { addSubscriber, getServices, getArtists, type ServiceItem, type Artist } from './lib/mockStore';
+// Every photo below was individually verified (real Pexels photo page checked,
+// not just guessed IDs) and is nail/manicure themed.
 const IMAGES = {
   // Vibrant Backgrounds
-  bgHero: 'https://images.pexels.com/photos/887352/pexels-photo-887352.jpeg?auto=compress&cs=tinysrgb&w=1920', 
-  bgStudio: 'https://images.pexels.com/photos/3997389/pexels-photo-3997389.jpeg?auto=compress&cs=tinysrgb&w=1920', 
-  bgServices: 'https://images.pexels.com/photos/705255/pexels-photo-705255.jpeg?auto=compress&cs=tinysrgb&w=1920', 
-  bgArtists: 'https://images.pexels.com/photos/4055806/pexels-photo-4055806.jpeg?auto=compress&cs=tinysrgb&w=1920', 
-  bgCommunity: 'https://images.pexels.com/photos/939836/pexels-photo-939836.jpeg?auto=compress&cs=tinysrgb&w=1920', 
-  bgContact: 'https://images.pexels.com/photos/1036856/pexels-photo-1036856.jpeg?auto=compress&cs=tinysrgb&w=1920', 
+  bgHero: 'https://images.pexels.com/photos/5870539/pexels-photo-5870539.jpeg?auto=compress&cs=tinysrgb&w=1920',
+  bgStudio: 'https://images.pexels.com/photos/7755296/pexels-photo-7755296.jpeg?auto=compress&cs=tinysrgb&w=1920',
+  bgServices: 'https://images.pexels.com/photos/13068361/pexels-photo-13068361.jpeg?auto=compress&cs=tinysrgb&w=1920',
+  bgArtists: 'https://images.pexels.com/photos/34121866/pexels-photo-34121866.jpeg?auto=compress&cs=tinysrgb&w=1920',
+  bgCommunity: 'https://images.pexels.com/photos/3997377/pexels-photo-3997377.jpeg?auto=compress&cs=tinysrgb&w=1920',
+  bgContact: 'https://images.pexels.com/photos/939835/pexels-photo-939835.jpeg?auto=compress&cs=tinysrgb&w=1920',
 
   // Content & Card Images
-  card1: 'https://images.pexels.com/photos/3997384/pexels-photo-3997384.jpeg?auto=compress&cs=tinysrgb&w=800', 
-  card2: 'https://images.pexels.com/photos/4055805/pexels-photo-4055805.jpeg?auto=compress&cs=tinysrgb&w=800', 
-  card3: 'https://images.pexels.com/photos/1105991/pexels-photo-1105991.jpeg?auto=compress&cs=tinysrgb&w=800', 
-  
+  card1: 'https://images.pexels.com/photos/939835/pexels-photo-939835.jpeg?auto=compress&cs=tinysrgb&w=800',
+  card2: 'https://images.pexels.com/photos/3997377/pexels-photo-3997377.jpeg?auto=compress&cs=tinysrgb&w=800',
+  card3: 'https://images.pexels.com/photos/5870539/pexels-photo-5870539.jpeg?auto=compress&cs=tinysrgb&w=800',
+
   // Community Grid Images
-  gal1: 'https://images.pexels.com/photos/1826060/pexels-photo-1826060.jpeg?auto=compress&cs=tinysrgb&w=500', 
-  gal2: 'https://images.pexels.com/photos/2085350/pexels-photo-2085350.jpeg?auto=compress&cs=tinysrgb&w=500', 
-  gal3: 'https://images.pexels.com/photos/1321404/pexels-photo-1321404.jpeg?auto=compress&cs=tinysrgb&w=500', 
-  gal4: 'https://images.pexels.com/photos/3997385/pexels-photo-3997385.jpeg?auto=compress&cs=tinysrgb&w=500', 
+  gal1: 'https://images.pexels.com/photos/34121866/pexels-photo-34121866.jpeg?auto=compress&cs=tinysrgb&w=500',
+  gal2: 'https://images.pexels.com/photos/8809259/pexels-photo-8809259.jpeg?auto=compress&cs=tinysrgb&w=500',
+  gal3: 'https://images.pexels.com/photos/8809259/pexels-photo-8809259.jpeg?auto=compress&cs=tinysrgb&w=500',
+  gal4: 'https://images.pexels.com/photos/13068361/pexels-photo-13068361.jpeg?auto=compress&cs=tinysrgb&w=500',
 };
 
 const NAV_LINKS = [
@@ -34,6 +33,7 @@ const NAV_LINKS = [
   { href: '#services', label: 'Services' },
   { href: '#artists', label: 'Artists' },
   { href: '#community', label: 'Community' },
+  { href: '#contact', label: 'Contact' },
 ];
 
 interface CartItem {
@@ -44,9 +44,12 @@ interface CartItem {
 
 export default function AuraHome() {
   const [services, setServices] = useState<ServiceItem[]>([]);
+  const [artists, setArtists] = useState<Artist[]>([]);
+  const [showTeam, setShowTeam] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [accountMessage, setAccountMessage] = useState('');
   const [cart, setCart] = useState<CartItem[]>([]);
 
   const [email, setEmail] = useState('');
@@ -56,6 +59,7 @@ export default function AuraHome() {
   useEffect(() => {
     try {
       setServices(getServices());
+      setArtists(getArtists());
     } catch (error) {
       console.error("Mock store error:", error);
     }
@@ -111,13 +115,26 @@ export default function AuraHome() {
 
             {/* Profile */}
             <div className="relative">
-              <button onClick={() => { setProfileOpen(!profileOpen); setCartOpen(false); }} className="w-9 h-9 rounded-full bg-fuchsia-500 text-white flex items-center justify-center text-xs font-black hover:scale-110 transition-all duration-300 shadow-[0_0_15px_rgba(217,70,239,0.5)] border border-white/20">
+              <button onClick={() => { setProfileOpen(!profileOpen); setCartOpen(false); setAccountMessage(''); }} className="w-9 h-9 rounded-full bg-fuchsia-500 text-white flex items-center justify-center text-xs font-black hover:scale-110 transition-all duration-300 shadow-[0_0_15px_rgba(217,70,239,0.5)] border border-white/20">
                 <User size={16} />
               </button>
               {profileOpen && (
                 <div className="absolute right-0 mt-4 w-56 bg-white/10 backdrop-blur-2xl border border-white/20 rounded-2xl shadow-2xl p-2 z-50">
-                  <button className="w-full text-left px-4 py-3 text-xs font-bold tracking-wide text-white hover:bg-white/20 rounded-xl transition-colors">Sign In</button>
-                  <button className="w-full text-left px-4 py-3 text-xs font-bold tracking-wide text-white hover:bg-white/20 rounded-xl transition-colors">Create Account</button>
+                  <button
+                    onClick={() => setAccountMessage('Sign-in isn\u2019t set up yet \u2014 coming soon.')}
+                    className="w-full text-left px-4 py-3 text-xs font-bold tracking-wide text-white hover:bg-white/20 rounded-xl transition-colors"
+                  >
+                    Sign In
+                  </button>
+                  <button
+                    onClick={() => setAccountMessage('Account creation isn\u2019t set up yet \u2014 coming soon.')}
+                    className="w-full text-left px-4 py-3 text-xs font-bold tracking-wide text-white hover:bg-white/20 rounded-xl transition-colors"
+                  >
+                    Create Account
+                  </button>
+                  {accountMessage && (
+                    <p className="px-4 py-2 text-[11px] text-fuchsia-300 leading-snug">{accountMessage}</p>
+                  )}
                   <Link href="/admin" className="block px-4 py-3 text-xs font-bold tracking-wide text-fuchsia-300 hover:bg-white/20 rounded-xl transition-colors">Admin Portal ↗</Link>
                 </div>
               )}
@@ -128,7 +145,7 @@ export default function AuraHome() {
               <button onClick={() => { setCartOpen(!cartOpen); setProfileOpen(false); }} className="relative group p-2">
                 <ShoppingBag size={22} className="text-white drop-shadow-lg group-hover:-translate-y-1 transition-transform" />
                 {cart.length > 0 && (
-                  <span className="absolute 0 top-0 right-0 bg-fuchsia-500 text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-bold border-2 border-white/20 shadow-lg">
+                  <span className="absolute top-0 right-0 bg-fuchsia-500 text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-bold border-2 border-white/20 shadow-lg">
                     {cart.length}
                   </span>
                 )}
@@ -203,7 +220,7 @@ export default function AuraHome() {
       {/* --- 2. Welcome / Studio Section --- */}
       <section id="studio" className="h-screen w-full snap-start relative flex items-center justify-center overflow-hidden pt-20">
         <img src={IMAGES.bgStudio} alt="Studio Colors" className="absolute inset-0 w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-black/30 backdrop-blur-[2px]"></div>
+        <div className="absolute inset-0 bg-black/35"></div>
         
         <div className="max-w-6xl w-full mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 px-6 relative z-10">
           <div className="relative h-[60vh] overflow-hidden rounded-3xl shadow-2xl border border-white/30 group hidden md:block">
@@ -233,7 +250,7 @@ export default function AuraHome() {
       {/* --- 3. Services Section --- */}
       <section id="services" className="h-screen w-full snap-start relative flex flex-col justify-center overflow-hidden pt-20">
         <img src={IMAGES.bgServices} alt="Services Menu" className="absolute inset-0 w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-cyan-950/40 backdrop-blur-md"></div>
+        <div className="absolute inset-0 bg-cyan-950/40"></div>
         
         <div className="max-w-7xl w-full mx-auto px-6 relative z-10">
           <div className="text-center mb-10">
@@ -270,24 +287,58 @@ export default function AuraHome() {
       {/* --- 4. Artists Section --- */}
       <section id="artists" className="h-screen w-full snap-start relative flex items-center justify-center overflow-hidden">
         <img src={IMAGES.bgArtists} alt="Artists" className="absolute inset-0 w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]"></div>
+        <div className="absolute inset-0 bg-black/40"></div>
         
-        <div className="relative max-w-3xl mx-auto bg-white/10 backdrop-blur-2xl p-12 md:p-20 text-center shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/30 rounded-3xl z-10 mx-6 hover:-translate-y-2 transition-transform duration-700">
+        <div className="relative max-w-4xl mx-auto bg-white/10 backdrop-blur-2xl p-10 md:p-16 text-center shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/30 rounded-3xl z-10 mx-6 transition-all duration-700">
           <span className="text-sm uppercase tracking-widest text-fuchsia-300 font-black mb-4 block drop-shadow-md">The Masters</span>
           <h2 className="font-serif italic text-5xl md:text-6xl mb-6 text-white drop-shadow-lg">Our Artists</h2>
-          <p className="text-sm md:text-base text-white/90 leading-relaxed mb-10 font-medium drop-shadow-sm">
-            Our team of senior nail technicians and resident artists bring decades of combined experience from the fashion and editorial worlds directly to your fingertips.
-          </p>
-          <Link href="#contact" className="inline-block bg-white text-black px-10 py-4 text-xs font-black tracking-widest uppercase hover:bg-fuchsia-500 hover:text-white hover:scale-105 transition-all duration-300 rounded-full shadow-2xl border border-white/50">
-            Meet The Team
-          </Link>
+
+          {!showTeam ? (
+            <>
+              <p className="text-sm md:text-base text-white/90 leading-relaxed mb-10 font-medium drop-shadow-sm">
+                Our team of senior nail technicians and resident artists bring decades of combined experience from the fashion and editorial worlds directly to your fingertips.
+              </p>
+              <button
+                onClick={() => setShowTeam(true)}
+                className="inline-block bg-white text-black px-10 py-4 text-xs font-black tracking-widest uppercase hover:bg-fuchsia-500 hover:text-white hover:scale-105 transition-all duration-300 rounded-full shadow-2xl border border-white/50"
+              >
+                Meet The Team
+              </button>
+            </>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-8 text-left">
+                {artists.map((artist) => (
+                  <div key={artist.id} className="bg-black/40 border border-white/20 rounded-2xl p-5">
+                    <div className="w-11 h-11 rounded-full bg-fuchsia-600 text-white flex items-center justify-center font-bold mb-4">
+                      {artist.name[0]}
+                    </div>
+                    <h3 className="font-serif italic text-xl text-white mb-1">{artist.name}</h3>
+                    <p className="text-[11px] text-cyan-300 font-bold uppercase tracking-wide mb-3">{artist.role}</p>
+                    <p className="text-xs text-white/80 leading-relaxed mb-3">{artist.bio}</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {artist.specialties.map((sp) => (
+                        <span key={sp} className="text-[10px] bg-white/10 text-white/80 px-2 py-1 rounded-sm">{sp}</span>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <button
+                onClick={() => setShowTeam(false)}
+                className="inline-block bg-white/10 text-white px-8 py-3 text-xs font-black tracking-widest uppercase hover:bg-white hover:text-black transition-all duration-300 rounded-full border border-white/40"
+              >
+                Back
+              </button>
+            </>
+          )}
         </div>
       </section>
 
       {/* --- 5. Community Gallery Section --- */}
       <section id="community" className="h-screen w-full snap-start relative flex items-center justify-center overflow-hidden pt-20">
         <img src={IMAGES.bgCommunity} alt="Community" className="absolute inset-0 w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-violet-900/40 backdrop-blur-md"></div>
+        <div className="absolute inset-0 bg-violet-900/40"></div>
         
         <div className="max-w-7xl w-full mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 px-6 items-center relative z-10">
           <div className="group cursor-default p-10 md:p-16 bg-white/10 backdrop-blur-2xl rounded-3xl border border-white/30 shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
@@ -321,7 +372,7 @@ export default function AuraHome() {
       {/* --- 6. Footer / Contact Section --- */}
       <section id="contact" className="h-screen w-full snap-start relative flex flex-col justify-center overflow-hidden pt-20">
         <img src={IMAGES.bgContact} alt="Contact" className="absolute inset-0 w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-black/50 backdrop-blur-lg"></div>
+        <div className="absolute inset-0 bg-black/45"></div>
 
         <div className="max-w-7xl w-full mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-12 px-6 p-10 md:p-12 bg-white/10 border border-white/30 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] backdrop-blur-2xl relative z-10">
           <div className="group">

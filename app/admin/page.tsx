@@ -125,7 +125,7 @@ export default function AdminDashboard() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`w-full flex items-center space-x-4 px-5 py-4 rounded-md text-xs font-bold tracking-[0.1em] transition-all duration-300 ${
+                className={`w-full flex items-center space-x-4 px-5 py-4 rounded-md text-xs font-bold tracking-widest transition-all duration-300 ${
                   activeTab === tab.id
                     ? 'bg-fuchsia-600 text-white shadow-[0_0_20px_rgba(192,38,211,0.4)] scale-105'
                     : 'text-zinc-400 hover:bg-white/10 hover:text-white'
@@ -149,7 +149,7 @@ export default function AdminDashboard() {
 
       {/* Main Content */}
       <main className="flex-1 p-12 overflow-y-auto bg-zinc-950 relative">
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-fuchsia-600/10 rounded-full blur-[120px] -z-10 pointer-events-none"></div>
+        <div className="absolute top-0 right-0 w-125 h-125fuchsia-600/10 rounded-full blur-[120px] -z-10 pointer-events-none"></div>
 
         {activeTab === 'dashboard' && (
           <DashboardView
@@ -254,7 +254,7 @@ function DashboardView({
         </div>
         <button
           onClick={onNewAppointment}
-          className="bg-white text-black text-xs font-bold tracking-[0.1em] uppercase px-8 py-4 hover:bg-fuchsia-500 hover:text-white hover:shadow-[0_10px_30px_rgba(217,70,239,0.3)] hover:-translate-y-1 transition-all duration-500 rounded-sm flex items-center gap-2"
+          className="bg-white text-black text-xs font-bold tracking-widest uppercase px-8 py-4 hover:bg-fuchsia-500 hover:text-white hover:shadow-[0_10px_30px_rgba(217,70,239,0.3)] hover:-translate-y-1 transition-all duration-500 rounded-sm flex items-center gap-2"
         >
           <Plus size={14} /> New Appointment
         </button>
@@ -272,7 +272,7 @@ function DashboardView({
           <h3 className="font-bold text-sm text-white tracking-wide">Today&apos;s Active Queue</h3>
           <div className="flex items-center space-x-2">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span className="text-[10px] font-bold text-zinc-400 tracking-[0.1em] uppercase">Live</span>
+            <span className="text-[10px] font-bold text-zinc-400 tracking-widest uppercase">Live</span>
           </div>
         </div>
         <div className="divide-y divide-white/5">
@@ -295,7 +295,7 @@ function DashboardView({
                   <Clock size={14} />
                   <span>{booking.time}</span>
                 </div>
-                <span className={`text-[10px] font-black px-4 py-2 rounded-sm uppercase tracking-[0.1em] transition-all duration-300 ${STATUS_STYLES[booking.status]}`}>
+                <span className={`text-[10px] font-black px-4 py-2 rounded-sm uppercase tracking-widesttransition-all duration-300 ${STATUS_STYLES[booking.status]}`}>
                   {booking.status}
                 </span>
               </div>
@@ -342,7 +342,7 @@ function ScheduleView({
               <select
                 value={b.status}
                 onChange={(e) => onStatusChange(b, e.target.value as BookingStatus)}
-                className={`text-[10px] font-black px-3 py-2 rounded-sm uppercase tracking-[0.1em] bg-zinc-900 border border-white/10 ${STATUS_STYLES[b.status]}`}
+                className={`text-[10px] font-black px-3 py-2 rounded-sm uppercase tracking-widest bg-zinc-900 border border-white/10 ${STATUS_STYLES[b.status]}`}
               >
                 {(['Pending', 'Confirmed', 'In Progress', 'Cancelled'] as BookingStatus[]).map((s) => (
                   <option key={s} value={s}>{s}</option>
@@ -465,7 +465,7 @@ function ViewHeader({ title, subtitle, actionLabel, onAction }: { title: string;
       </div>
       <button
         onClick={onAction}
-        className="bg-white text-black text-xs font-bold tracking-[0.1em] uppercase px-8 py-4 hover:bg-fuchsia-500 hover:text-white hover:-translate-y-1 transition-all duration-500 rounded-sm flex items-center gap-2"
+        className="bg-white text-black text-xs font-bold tracking-widest uppercase px-8 py-4 hover:bg-fuchsia-500 hover:text-white hover:-translate-y-1 transition-all duration-500 rounded-sm flex items-center gap-2"
       >
         <Plus size={14} /> {actionLabel}
       </button>
