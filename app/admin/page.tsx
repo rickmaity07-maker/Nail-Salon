@@ -11,8 +11,8 @@ import {
   getServices, upsertService, removeService,
   getArtists, upsertArtist, removeArtist,
   getSubscribers, addSubscriber, removeSubscriber,
-  type Booking, type BookingStatus, type ServiceItem, type Artist, type Subscriber, type AccentColor,
-} from '../lib/mockStore';
+  type Booking, type BookingStatus, type ServiceItem, type Artist, type Subscriber, type AccentColor
+} from '../lib/dataStore';
 
 type Tab = 'dashboard' | 'schedule' | 'services' | 'artists' | 'mailing';
 

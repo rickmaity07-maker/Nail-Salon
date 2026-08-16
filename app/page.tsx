@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Menu, X, ShoppingBag, User, Check, Loader2, Trash2 } from 'lucide-react';
-import { addSubscriber, getServices, getArtists, type ServiceItem, type Artist } from './lib/mockStore';
+import { addSubscriber, getServices, getArtists, type ServiceItem, type Artist } from './lib/dataStore';
 // Every photo below was individually verified (real Pexels photo page checked,
 // not just guessed IDs) and is nail/manicure themed.
 const IMAGES = {
